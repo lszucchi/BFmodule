@@ -13,6 +13,7 @@ class DR:
             self.PORT=PORT
             self.ApiKey=ApiKey
             self.timeout=timeout
+            print(req.json()['data']['system_name'], req.json()['data']['system_version'])
         else:
             raise f"Initial HTTP request failed. Status Code:{req.stats_code}"
 
@@ -23,6 +24,10 @@ class DR:
     def Post(self, node, data):
         req = requests.post(f"https://{self.DEVICE_IP}:{self.PORT}/{node}?key={self.ApiKey}", json=data, timeout=self.rimeout)
         return req
+
+    def Id(self):
+        req=requests.get(f'https://{DEVICE_IP}:{PORT}/system?key={ApiKey}', timeout=self.timeout)
+        return req.json()['data']['system_name'], req.json()['data']['system_version']
 
     def GetT(self, name, fstr=None):
         if name not in VALID_TCHANNELS:
