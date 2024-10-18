@@ -45,7 +45,7 @@ class DR:
         if out>0:
             return out
         try:
-            out=numpy.polyval(SensorParams[SENSORNAME[TCHANNELS.index('tmixing')]], self.GetTR(name))
+            out=numpy.polyval(SensorParams[SENSORNAME[TCHANNELS.index(name)]], numpy.log10(self.GetTR(name)))
             return f"*{format(out, '.3e')}"
         except:
             return numpy.nan
