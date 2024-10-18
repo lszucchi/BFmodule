@@ -1,8 +1,11 @@
-import requests, json, sys
+import requests, json, sys, numpy
 sys.path.append('.')
 from DeviceParameters import DEVICE_IP, PORT, ApiKey
+sys.path.append('./bin')
+from SensorParameters import SensorParams
 
 TCHANNELS = ['', 't50k', 't4k', 'tmagnet', '', 'tstill', 'tmixing', '', 'tfse']
+SENSORNAME = ['', '', '', '', '', '', 'R10482340', '', '']
 PCHANNELS = ["can", "p2", "p3", "p4", "tank", "p6"]
 
 class DR:
@@ -38,13 +41,15 @@ class DR:
         if req.status_code != 200:
             return f"Comm failed. Status Code {req.status_code}"
          
+        out=float(req.json()['data'][f'mapper.bf.temperatures.{name}']['content']['latest_value']['value'])
+        if out>0:
+            return out
         try:
-            out=float(req.json()['data'][f'mapper.bf.temperatures.{name}']['content']['latest_value']['value'])
-            if out>0:
-                return out
+            out=numpy.polyval(SensorParams[SENSORNAME[TCHANNELS.index('tmixing')]], self.GetTR(name))
+            return f"*{format(out, '.3e')}"
         except:
-            pass
-        return float('NaN')
+            return numpy.nan
+        
 
     def GetTCh(self, Chn):
         return self.GetT(TCHANNELS[Chn])
