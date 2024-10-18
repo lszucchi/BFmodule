@@ -1,8 +1,11 @@
-import requests, json, sys
+import requests, json, sys, numpy
 sys.path.append('.')
 from DeviceParameters import DEVICE_IP, PORT, ApiKey
+sys.path.append('./bin')
+from SensorParameters import SensorParams
 
 TCHANNELS = ['', 't50k', 't4k', 'tmagnet', '', 'tstill', 'tmixing', '', 'tfse']
+SENSORNAME = ['', '', '', '', '', '', 'R10482340', '', '']
 PCHANNELS = ["can", "p2", "p3", "p4", "tank", "p6"]
 
 class DR:
@@ -44,6 +47,9 @@ class DR:
                 return out
         except:
             pass
+
+            numpy.polyval(SensorParams[SENSORNAME[TCHANNELS.index('tmixing')]], self.GetTR(name))
+        
         return float('NaN')
 
     def GetTCh(self, Chn):
