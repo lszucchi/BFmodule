@@ -36,22 +36,29 @@ def Logging(path, period):
         if date!=datetime.now().strftime('%y%m%d') or not isfile(plog) or not isfile(tlog):
             date, tlog, plog=InitLog(path)
         time=datetime.now().strftime('%H:%M:%S')
-        
-        WriteLog(f"{time}", tlog, end='')
-        for name in TCHANNELS:
-            if name:
-                temp=Elsa.GetT(name)
-                try:
-                    WriteLog(f",{format(temp, '07.3f') if temp > 0.1 else format(temp*1e3, '06.3f')+'e-3'}", tlog, end='')
-                except:
-                    WriteLog(f",{temp}", tlog, end='')
-        WriteLog('', tlog)
-        
-        WriteLog(f"{time},{','.join([format(Elsa.GetPCh(k), '.3e') for k in range(1, 7)])},{format(Elsa.GetFlow(), '.2f')}", plog)
-        sleep(1)
+
+        try:
+            WriteLog(f"{time}", tlog, end='')
+            for name in TCHANNELS:
+                if name:
+                    temp=Elsa.GetT(name)
+                    try:
+                        WriteLog(f",{format(temp, '07.3f') if temp > 0.1 else format(temp*1e3, '06.3f')+'e-3'}", tlog, end='')
+                    except:
+                        WriteLog(f",{temp}", tlog, end='')
+            WriteLog('', tlog)
+            
+            WriteLog(f"{time},{','.join([format(Elsa.GetPCh(k), '.3e') for k in range(1, 7)])},{format(Elsa.GetFlow(), '.2f')}", plog)
+            sleep(1)
+        except:
+            pass
     return 1
 
-        
-Logging(expanduser('~/Documents/ElsaLogs'), 60)
+while(True):
+    try:
+        Logging(expanduser('~/Documents/ElsaLogs'), 60)
+    except:
+        pass
+
 
     

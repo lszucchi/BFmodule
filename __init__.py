@@ -43,7 +43,7 @@ class DR:
         if out>0:
             return out
         try:
-            out=numpy.polyval(SensorParams[SENSORNAME[TCHANNELS.index(name)]], numpy.log10(self.GetTR(name)))
+            out=10**np.polyval(SensorParams[SENSORNAME[TCHANNELS.index(name)]], self.GetTR(name))
             return f"*{format(out, '.3e')}"
         except:
             return numpy.nan
