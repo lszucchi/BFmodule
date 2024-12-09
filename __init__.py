@@ -19,6 +19,44 @@ class DR:
         else:
             raise f"Initial HTTP request failed. Status Code:{req.stats_code}"
 
+    def Help(self, Func=''):
+        
+        methods_list = [method for method in vars(DR) if callable(
+                getattr(DR, method)) and not method.startswith("__")]
+        
+        if Func not in methods_list[1:]:
+            if Func!='' and Func!='Help':
+                print("Invalid Method")
+
+            methods_list = [method for method in vars(DR) if callable(
+                getattr(DR, method)) and not method.startswith("__")]
+
+            print("Help(str method). Returns info on method")
+            print("Methods:", methods_list)
+            return 0
+        
+        FuncHelp = {
+            'Get': "Get(str node). Return HTTP get data in Node (dict)", 
+
+            'Post': "Post(str node, dict data). HTTP post data in Node",
+
+            'Idn': "Idn(). Return system ID and version (str tuple)",
+
+            'GetT': "GetT(str Name). Return temperature (float or nan) for Name",
+
+            'GetTCh': "GetTCh(str n). Return temperature (float or nan)  for Channel n",
+
+            'GetPCh': "GetPCh(str n). Return pressure (float or nan) for Channel n",
+
+            'GetAirPressOk': "GetAirPressOk(). Return compressed air pressure ok (bool)",
+
+            'GetFlow': "GetFlow(). Return He Flow (float)",
+
+            'GetPulseTubeStatus': "GetPulseTubeStatus(). Return PT status (bool)"}
+        
+        print(FuncHelp[Func])
+        return 0        
+
     def Get(self, node):
         req=requests.get(f"https://{self.DEVICE_IP}:{self.PORT}/{node}?key={self.ApiKey}", timeout=self.timeout)
         return req
@@ -27,7 +65,7 @@ class DR:
         req = requests.post(f"https://{self.DEVICE_IP}:{self.PORT}/{node}?key={self.ApiKey}", json=data, timeout=self.rimeout)
         return req
 
-    def Id(self):
+    def Idn(self):
         req=requests.get(f'https://{DEVICE_IP}:{PORT}/system?key={ApiKey}', timeout=self.timeout)
         return req.json()['data']['system_name'], req.json()['data']['system_version']
 
@@ -83,6 +121,14 @@ class DR:
         except:
             pass
         return float('NaN')
+
+    def GetAirPressOk(self):
+        req=self.Get("values/driver.vc.pressure_ok")
+
+        if req.status_code != 200:
+            return f"Comm failed. Status Code {req.status_code}"
+        
+        return bool(req.json()['data']['driver.vc.pressure_ok']['content']['latest_value']['value'])
 
     def GetFlow(self):
         req=self.Get(f"values/mapper/bf/flow")
