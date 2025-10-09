@@ -9,13 +9,14 @@ PCHANNELS = ["can", "p2", "p3", "p4", "tank", "p6"]
 class DR:
 
     def __init__(self, ADDR=DEVICE_IP, timeout=10):
-        print(f"Opening API at {ADDR}")
+        print(f"Opening API at {ADDR}", end='')
         req=requests.get(f'https://{ADDR}:{PORT}/system?key={ApiKey}', timeout=timeout)
         if req.status_code==200:
             self.DEVICE_IP=DEVICE_IP
             self.PORT=PORT
             self.ApiKey=ApiKey
             self.timeout=timeout
+            print("\r", end='')
             print(req.json()['data']['system_name'], req.json()['data']['system_version'])
         else:
             raise f"Initial HTTP request failed. Status Code:{req.stats_code}"
